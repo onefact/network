@@ -23,7 +23,7 @@ DATASETS_TO_LOAD = [
     CMSDataset('Hospital All Owners', 'hospital_all_owners'),
     CMSDataset('Home Health Agency All Owners', 'hha_all_owners'),
     CMSDataset('Hospice All Owners', 'hospice_all_owners'),
-    CMSDataset('Skilled Nursing Facilities All Owners', 'snf_all_owners'),
+    CMSDataset('Skilled Nursing Facility All Owners', 'snf_all_owners'),
     CMSDataset('Federally Qualified Health Center All Owners', 'fqhc_all_owners'),
     CMSDataset('Rural Health Clinic All Owners', 'rhc_all_owners'),
 
@@ -73,6 +73,7 @@ class CMSDataAPILoader():
             rows = cursor.fetchall()
             if len(rows) > 0 and rows[0][0] == total_rows:
                 print(f"Skipping, {dataset_obj.distro['title']} already loaded")
+                return None
             elif rows[0][0] != total_rows:
                 print(f"Data mismatch, reloading {dataset_obj.distro['title']}")
                 self.conn.execute(f"DELETE FROM {dataset_obj.target_table} WHERE distro_title = '{dataset_obj.distro['title']}'")
@@ -93,7 +94,7 @@ class CMSDataAPILoader():
     def prepare_data(self, df: pd.DataFrame):
         df.replace("", pd.NA, inplace=True)
         df.replace("N/A", pd.NA, inplace=True)
-        df.rename(columns=lambda x: x.lower().replace(' ', '_'), inplace=True)
+        df.rename(columns=lambda x: x.lower().replace(' ', '_').replace('-', ''), inplace=True)
         df['distro_access_url'] = self.dataset_obj.distro['accessURL']
         df['distro_title'] = self.dataset_obj.distro['title']
         df['distro_modified'] = self.dataset_obj.distro['modified']
