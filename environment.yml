@@ -1,4 +1,4 @@
-name: slothful-sleuth
+name: bb_bricker
 channels:
   - conda-forge
   - defaults
