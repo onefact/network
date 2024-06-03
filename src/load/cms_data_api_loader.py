@@ -94,7 +94,7 @@ class CMSDataAPILoader():
     def prepare_data(self, df: pd.DataFrame):
         df.replace("", pd.NA, inplace=True)
         df.replace("N/A", pd.NA, inplace=True)
-        df.rename(columns=lambda x: x.lower().replace(' ', '_').replace('-', ''), inplace=True)
+        df.rename(columns=lambda x: x.lower().replace(' ', '_').replace('-', '').replace("__", "_"), inplace=True)
         df['distro_access_url'] = self.dataset_obj.distro['accessURL']
         df['distro_title'] = self.dataset_obj.distro['title']
         df['distro_modified'] = self.dataset_obj.distro['modified']
