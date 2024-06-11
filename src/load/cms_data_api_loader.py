@@ -112,5 +112,5 @@ class CMSDataAPILoader():
             self.retrieve_dataset(dataset)
 
 if __name__ == '__main__':
-    loader = CMSDataAPILoader('data/raw/cms_data_api_raw.db')
+    loader = CMSDataAPILoader('data/staging/cms_data_api_raw.db')
     loader.load_all_datasets()
