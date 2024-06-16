@@ -26,10 +26,6 @@ Please submit an issue if you have a request for a feature, request for a visual
 
 If e-mail support is needed, please email us at [help@payless.health](mailto:help@payless.health).
 
-### TODO 
-- Create an "individuals view" which takes all individuals and puts in a single table with arrays of their associate linkages...
-- Same for organizations
-
 # Data Sources
 
 ### Ownership Data
