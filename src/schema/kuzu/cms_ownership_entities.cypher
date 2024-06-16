@@ -83,7 +83,7 @@ CREATE REL TABLE GROUP OwnedBy (
     percentage_ownership STRING
 );
 
-CREATE REL TABLE GROUP EmployedBy (
+CREATE REL TABLE EmployedBy (
     FROM Person TO CareProviderOrganization,
     role_code STRING,
     role_text STRING,

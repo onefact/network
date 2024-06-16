@@ -1,6 +1,7 @@
 -- TODO
 -- extract ownership associate_id pairs for orgs and persons
 -- extract affiliations / works at relationships
+-- extract SNF affiliations and model in affiliated network
 -- normalize addresses?
 
 DROP VIEW IF EXISTS vw_enrolled_care_provider_organizations;

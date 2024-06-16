@@ -48,7 +48,9 @@ def main(conn: kuzu.Connection, DATA_PATH: Path) -> None:
     with open("src/schema/kuzu/cms_ownership_entities.cypher", "r") as f:
         ddl_script = f.read()
         initialize_tables(conn, ddl_script)
-    
+
+    conn.execute(f"CREATE (p:Person {associate_id: '1', last_name: 'Alice', first_name: 'David'});")
+
     # Ingest nodes
     # conn.execute(f"COPY Client FROM '{DATA_PATH}/client.csv' (header=true);")
     # conn.execute(f"COPY City FROM '{DATA_PATH}/city.csv' (header=true);")
