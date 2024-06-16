@@ -3,7 +3,7 @@
 -- extract affiliations / works at relationships
 -- normalize addresses?
 
-
+DROP VIEW IF EXISTS vw_enrolled_care_provider_organizations;
 CREATE VIEW vw_enrolled_care_provider_organizations AS
 SELECT 
     associate_id,
@@ -126,6 +126,7 @@ SELECT
 FROM rhc_enrollments;
 
 -- addresses
+DROP VIEW IF EXISTS vw_addresses_with_associate;
 CREATE VIEW vw_addresses_with_associate AS
 SELECT "address_line_1_owner" AS "address_line_1",
     "address_line_2_owner" AS "address_line_2",
@@ -134,6 +135,7 @@ SELECT "address_line_1_owner" AS "address_line_1",
     "zip_code_owner" AS "zip_code",
     "associate_id_owner" AS "associate_id"
 FROM hospital_all_owners
+WHERE type_owner = 'O'
 UNION ALL
 SELECT "address_line_1_owner" AS "address_line_1",
     "address_line_2_owner" AS "address_line_2",
@@ -142,6 +144,7 @@ SELECT "address_line_1_owner" AS "address_line_1",
     "zip_code_owner" AS "zip_code",
     "associate_id_owner" AS "associate_id"
 FROM hha_all_owners
+WHERE type_owner = 'O'
 UNION ALL
 SELECT "address_line_1_owner" AS "address_line_1",
     "address_line_2_owner" AS "address_line_2",
@@ -150,6 +153,7 @@ SELECT "address_line_1_owner" AS "address_line_1",
     "zip_code_owner" AS "zip_code",
     "associate_id_owner" AS "associate_id"
 FROM hospice_all_owners
+WHERE type_owner = 'O'
 UNION ALL
 SELECT "address_line_1_owner" AS "address_line_1",
     "address_line_2_owner" AS "address_line_2",
@@ -158,6 +162,7 @@ SELECT "address_line_1_owner" AS "address_line_1",
     "zip_code_owner" AS "zip_code",
     "associate_id_owner" AS "associate_id"
 FROM snf_all_owners
+WHERE type_owner = 'O'
 UNION ALL
 SELECT "address_line_1_owner" AS "address_line_1",
     "address_line_2_owner" AS "address_line_2",
@@ -166,6 +171,7 @@ SELECT "address_line_1_owner" AS "address_line_1",
     "zip_code_owner" AS "zip_code",
     "associate_id_owner" AS "associate_id"
 FROM fqhc_all_owners
+WHERE type_owner = 'O'
 UNION ALL
 SELECT "address_line_1_owner" AS "address_line_1",
     "address_line_2_owner" AS "address_line_2",
@@ -174,6 +180,7 @@ SELECT "address_line_1_owner" AS "address_line_1",
     "zip_code_owner" AS "zip_code",
     "associate_id_owner" AS "associate_id"
 FROM rhc_all_owners
+WHERE type_owner = 'O'
 UNION ALL
 SELECT "address_line_1",
     "address_line_2",
@@ -223,6 +230,7 @@ SELECT "address_line_1",
     "associate_id"
 FROM rhc_enrollments;
 
+DROP VIEW IF EXISTS vw_person;
 CREATE VIEW vw_person AS
 SELECT associate_id_owner AS associate_id,
     first_name_owner AS first_name,
@@ -266,11 +274,10 @@ SELECT associate_id_owner AS associate_id,
 FROM rhc_all_owners
 WHERE type_owner = 'I';
 
-
+DROP VIEW IF EXISTS vw_extract_organization_owners;
 CREATE VIEW vw_extract_organization_owners AS
 SELECT
   associate_id_owner AS associate_id,
-  NULL AS legal_entity_id,
   organization_name_owner AS organization_name,
   doing_business_as_name_owner AS doing_business_as_name,
   created_for_acquisition_owner AS created_for_acquisition,
@@ -292,7 +299,6 @@ WHERE type_owner = 'O'
 UNION ALL
 SELECT
   associate_id_owner AS associate_id,
-  NULL AS legal_entity_id,
   organization_name_owner AS organization_name,
   doing_business_as_name_owner AS doing_business_as_name,
   created_for_acquisition_owner AS created_for_acquisition,
@@ -314,7 +320,6 @@ WHERE type_owner = 'O'
 UNION ALL
 SELECT
   associate_id_owner AS associate_id,
-  NULL AS legal_entity_id,
   organization_name_owner AS organization_name,
   doing_business_as_name_owner AS doing_business_as_name,
   created_for_acquisition_owner AS created_for_acquisition,
@@ -336,7 +341,6 @@ WHERE type_owner = 'O'
 UNION ALL
 SELECT
   associate_id_owner AS associate_id,
-  NULL AS legal_entity_id,
   organization_name_owner AS organization_name,
   doing_business_as_name_owner AS doing_business_as_name,
   created_for_acquisition_owner AS created_for_acquisition,
@@ -358,7 +362,6 @@ WHERE type_owner = 'O'
 UNION ALL
 SELECT
   associate_id_owner AS associate_id,
-  NULL AS legal_entity_id,
   organization_name_owner AS organization_name,
   doing_business_as_name_owner AS doing_business_as_name,
   created_for_acquisition_owner AS created_for_acquisition,
@@ -380,7 +383,6 @@ WHERE type_owner = 'O'
 UNION ALL
 SELECT
   associate_id_owner AS associate_id,
-  NULL AS legal_entity_id,
   organization_name_owner AS organization_name,
   doing_business_as_name_owner AS doing_business_as_name,
   created_for_acquisition_owner AS created_for_acquisition,
@@ -399,3 +401,4 @@ SELECT
   other_type_text_owner AS other_type_text
 FROM rhc_all_owners
 WHERE type_owner = 'O';
+
