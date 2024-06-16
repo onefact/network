@@ -21,6 +21,7 @@ import kuzu
 
 
 def initialize_tables(conn: kuzu.Connection, ddl_script: str) -> None:
+    print(ddl_script)
     conn.execute(ddl_script)
 
 def create_transaction_edge_file(conn: kuzu.Connection) -> None:
@@ -48,6 +49,18 @@ def main(conn: kuzu.Connection, DATA_PATH: Path) -> None:
     with open("src/schema/kuzu/cms_ownership_entities.cypher", "r") as f:
         ddl_script = f.read()
         initialize_tables(conn, ddl_script)
+
+    # already exists
+    # conn.execute("""
+    # CREATE NODE TABLE Person (
+    #     associate_id STRING,
+    #     first_name STRING,
+    #     middle_name STRING,
+    #     last_name STRING,
+    #     // title STRING, moved to associated relation, Person 1:M Titles
+    #     PRIMARY KEY (associate_id)
+    # );
+    # """)
 
     conn.execute(f"CREATE (p:Person {associate_id: '1', last_name: 'Alice', first_name: 'David'});")
 
