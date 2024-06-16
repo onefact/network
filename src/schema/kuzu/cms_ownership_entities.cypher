@@ -87,8 +87,10 @@ CREATE REL TABLE GROUP OwnedBy (
 CREATE REL TABLE GROUP AffiliatedWith (
     FROM CareProviderOrganization TO LegalEntity,
     FROM Person TO LegalEntity,
-    affiliation_proposer STRING, // Who, or what is proposing the affiliation exists?
-    affiliation_methodology STRING, // What methodology are they using?
-    affiliation_evidence STRING, // What is their evidence (s3 link)
-    affiliation_date STRING
+    proposing_entity STRING, // Who, or what is proposing the affiliation exists?
+    methodology_name STRING, // What methodology are they using?
+    methodology_detail_url STRING, // What methodology are they using?
+    evidence_url STRING, // Link to evidence, this may be a json document, a .zip file, or a internet archive link
+    effective_date DATE,
+    end_date DATE
 );
