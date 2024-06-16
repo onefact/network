@@ -61,8 +61,8 @@ SELECT
     organization_type_structure,
     organization_other_type_text,
     proprietary_nonprofit,
-    practice_location_type,
-    location_other_type_text
+    NULL AS practice_location_type,
+    NULL AS location_other_type_text
 FROM hospice_enrollments
 UNION ALL
 SELECT 
@@ -81,8 +81,8 @@ SELECT
     organization_type_structure,
     organization_other_type_text,
     proprietary_nonprofit,
-    practice_location_type,
-    location_other_type_text
+    NULL AS practice_location_type,
+    NULL AS location_other_type_text
 FROM snf_enrollments
 UNION ALL
 SELECT 
@@ -101,8 +101,8 @@ SELECT
     organization_type_structure,
     organization_other_type_text,
     proprietary_nonprofit,
-    practice_location_type,
-    location_other_type_text
+    NULL AS practice_location_type,
+    NULL AS location_other_type_text
 FROM fqhc_enrollments
 UNION ALL
 SELECT 
@@ -121,8 +121,8 @@ SELECT
     organization_type_structure,
     organization_other_type_text,
     proprietary_nonprofit,
-    practice_location_type,
-    location_other_type_text
+    NULL AS practice_location_type,
+    NULL AS location_other_type_text
 FROM rhc_enrollments;
 
 -- addresses

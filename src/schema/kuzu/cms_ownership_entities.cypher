@@ -83,12 +83,21 @@ CREATE REL TABLE GROUP OwnedBy (
     percentage_ownership STRING
 );
 
+CREATE REL TABLE GROUP EmployedBy (
+    FROM Person TO CareProviderOrganization,
+    role_code STRING,
+    role_text STRING,
+    title STRING,
+    association_date STRING
+);
+
 
 CREATE REL TABLE GROUP AffiliatedWith (
-    FROM CareProviderOrganization TO LegalEntity,
+    FROM LegalEntity TO CareProviderOrganization,
+    FROM Person TO CareProviderOrganization,
     FROM Person TO LegalEntity,
     proposing_entity STRING, // Who, or what is proposing the affiliation exists?
-    methodology_name STRING, // What methodology are they using?
+    methodology_name STRING, // What methodology is used to infer the relationship?
     methodology_detail_url STRING, // What methodology are they using?
     evidence_url STRING, // Link to evidence, this may be a json document, a .zip file, or a internet archive link
     effective_date DATE,
