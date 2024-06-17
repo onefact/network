@@ -40,7 +40,7 @@ CREATE NODE TABLE CareProviderOrganization (
     proprietary_nonprofit STRING,
     practice_location_type STRING,
     location_other_type_text STRING,
-    PRIMARY KEY (associate_id)
+    PRIMARY KEY (enrollment_id)
 );
 
 // Define LegalEntity node

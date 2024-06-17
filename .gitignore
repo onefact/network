@@ -1,7 +1,6 @@
 # IDE
 .vscode
 
-
 # repo
 data/raw/*
 !data/raw/.gitkeep
