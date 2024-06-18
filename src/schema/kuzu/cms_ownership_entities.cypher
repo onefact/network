@@ -21,8 +21,8 @@ CREATE NODE TABLE Address (
     // TODO geocodes
 );
 
-// Define CareProviderOrganization node
-CREATE NODE TABLE CareProviderOrganization (
+// Define PECOSEnrolledCareProvider node
+CREATE NODE TABLE PECOSEnrolledCareProvider (
     associate_id STRING,
     enrollment_id STRING,
     enrollment_state STRING,
@@ -69,12 +69,12 @@ CREATE NODE TABLE LegalEntity (
 
 // Use edge groups when multiple entities share the same type of relationship
 CREATE REL TABLE GROUP LocatedAt (
-    FROM CareProviderOrganization TO Address,
+    FROM PECOSEnrolledCareProvider TO Address,
     FROM Person TO Address
 );
 
 CREATE REL TABLE GROUP OwnedBy (
-    FROM CareProviderOrganization TO LegalEntity,
+    FROM PECOSEnrolledCareProvider TO LegalEntity,
     FROM Person TO LegalEntity,
     role_code STRING,
     role_text STRING,
@@ -84,7 +84,7 @@ CREATE REL TABLE GROUP OwnedBy (
 );
 
 CREATE REL TABLE EmployedBy (
-    FROM Person TO CareProviderOrganization,
+    FROM Person TO PECOSEnrolledCareProvider,
     role_code STRING,
     role_text STRING,
     title STRING,
@@ -93,8 +93,8 @@ CREATE REL TABLE EmployedBy (
 
 
 CREATE REL TABLE GROUP AffiliatedWith (
-    FROM LegalEntity TO CareProviderOrganization,
-    FROM Person TO CareProviderOrganization,
+    FROM LegalEntity TO PECOSEnrolledCareProvider,
+    FROM Person TO PECOSEnrolledCareProvider,
     FROM Person TO LegalEntity,
     proposing_entity STRING, // Who, or what is proposing the affiliation exists?
     methodology_name STRING, // What methodology is used to infer the relationship?

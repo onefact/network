@@ -297,7 +297,7 @@ SELECT
   other_type_text_owner AS other_type_text
 FROM hospital_all_owners
 WHERE type_owner = 'O'
-UNION ALL
+UNION
 SELECT
   associate_id_owner AS associate_id,
   organization_name_owner AS organization_name,
@@ -318,7 +318,7 @@ SELECT
   other_type_text_owner AS other_type_text
 FROM hha_all_owners
 WHERE type_owner = 'O'
-UNION ALL
+UNION
 SELECT
   associate_id_owner AS associate_id,
   organization_name_owner AS organization_name,
@@ -339,7 +339,7 @@ SELECT
   other_type_text_owner AS other_type_text
 FROM hospice_all_owners
 WHERE type_owner = 'O'
-UNION ALL
+UNION
 SELECT
   associate_id_owner AS associate_id,
   organization_name_owner AS organization_name,
@@ -360,7 +360,7 @@ SELECT
   other_type_text_owner AS other_type_text
 FROM snf_all_owners
 WHERE type_owner = 'O'
-UNION ALL
+UNION
 SELECT
   associate_id_owner AS associate_id,
   organization_name_owner AS organization_name,
@@ -381,7 +381,7 @@ SELECT
   other_type_text_owner AS other_type_text
 FROM fqhc_all_owners
 WHERE type_owner = 'O'
-UNION ALL
+UNION
 SELECT
   associate_id_owner AS associate_id,
   organization_name_owner AS organization_name,
