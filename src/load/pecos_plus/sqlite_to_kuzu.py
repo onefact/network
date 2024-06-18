@@ -181,7 +181,7 @@ def reload_from_scratch(
     kuzu_conn = kuzu.Connection(kuzu_db)
 
     # Initialize tables
-    with open("src/schema/kuzu/cms_ownership_entities.cypher", "r") as f:
+    with open("src/schema/pecos_plus/kuzu/cms_ownership_entities.cypher", "r") as f:
         ddl_script = f.read()
         initialize_tables(kuzu_conn, ddl_script)
 
