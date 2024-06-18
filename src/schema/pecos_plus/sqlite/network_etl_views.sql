@@ -234,6 +234,7 @@ FROM rhc_enrollments;
 DROP VIEW IF EXISTS vw_person;
 CREATE VIEW vw_person AS
 SELECT associate_id_owner AS associate_id,
+    associate_id AS associate_id_care_organization,
     first_name_owner AS first_name,
     middle_name_owner AS middle_name,
     last_name_owner AS last_name
@@ -241,6 +242,7 @@ FROM hospital_all_owners
 WHERE type_owner = 'I'
 UNION
 SELECT associate_id_owner AS associate_id,
+    associate_id AS associate_id_care_organization,
     first_name_owner AS first_name,
     middle_name_owner AS middle_name,
     last_name_owner AS last_name
@@ -248,6 +250,7 @@ FROM hha_all_owners
 WHERE type_owner = 'I'
 UNION
 SELECT associate_id_owner AS associate_id,
+    associate_id AS associate_id_care_organization,
     first_name_owner AS first_name,
     middle_name_owner AS middle_name,
     last_name_owner AS last_name
@@ -255,6 +258,7 @@ FROM hospice_all_owners
 WHERE type_owner = 'I'
 UNION
 SELECT associate_id_owner AS associate_id,
+    associate_id AS associate_id_care_organization,
     first_name_owner AS first_name,
     middle_name_owner AS middle_name,
     last_name_owner AS last_name
@@ -262,6 +266,7 @@ FROM snf_all_owners
 WHERE type_owner = 'I'
 UNION
 SELECT associate_id_owner AS associate_id,
+    associate_id AS associate_id_care_organization,
     first_name_owner AS first_name,
     middle_name_owner AS middle_name,
     last_name_owner AS last_name
@@ -269,6 +274,7 @@ FROM fqhc_all_owners
 WHERE type_owner = 'I'
 UNION
 SELECT associate_id_owner AS associate_id,
+    associate_id AS associate_id_care_organization,
     first_name_owner AS first_name,
     middle_name_owner AS middle_name,
     last_name_owner AS last_name
@@ -278,6 +284,7 @@ WHERE type_owner = 'I';
 DROP VIEW IF EXISTS vw_extract_organization_owners;
 CREATE VIEW vw_extract_organization_owners AS
 SELECT
+  associate_id AS associate_id_care_organization,
   associate_id_owner AS associate_id,
   organization_name_owner AS organization_name,
   doing_business_as_name_owner AS doing_business_as_name,
@@ -299,6 +306,7 @@ FROM hospital_all_owners
 WHERE type_owner = 'O'
 UNION
 SELECT
+  associate_id AS associate_id_care_organization,
   associate_id_owner AS associate_id,
   organization_name_owner AS organization_name,
   doing_business_as_name_owner AS doing_business_as_name,
@@ -320,6 +328,7 @@ FROM hha_all_owners
 WHERE type_owner = 'O'
 UNION
 SELECT
+  associate_id AS associate_id_care_organization,
   associate_id_owner AS associate_id,
   organization_name_owner AS organization_name,
   doing_business_as_name_owner AS doing_business_as_name,
@@ -341,6 +350,7 @@ FROM hospice_all_owners
 WHERE type_owner = 'O'
 UNION
 SELECT
+  associate_id AS associate_id_care_organization,
   associate_id_owner AS associate_id,
   organization_name_owner AS organization_name,
   doing_business_as_name_owner AS doing_business_as_name,
@@ -362,6 +372,7 @@ FROM snf_all_owners
 WHERE type_owner = 'O'
 UNION
 SELECT
+  associate_id AS associate_id_care_organization,
   associate_id_owner AS associate_id,
   organization_name_owner AS organization_name,
   doing_business_as_name_owner AS doing_business_as_name,
@@ -383,6 +394,7 @@ FROM fqhc_all_owners
 WHERE type_owner = 'O'
 UNION
 SELECT
+  associate_id AS associate_id_care_organization,
   associate_id_owner AS associate_id,
   organization_name_owner AS organization_name,
   doing_business_as_name_owner AS doing_business_as_name,

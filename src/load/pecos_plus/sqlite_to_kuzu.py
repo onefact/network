@@ -91,6 +91,7 @@ def transform_legal_entity(df: pd.DataFrame) -> pd.DataFrame:
 
     To keep it simple (naive?) 'Y' trumps 'N' and populated trumps NULL.  
     """
+    df.drop("associate_id_care_organization", axis=1, inplace=True)
     count = df.shape[0]
     dedup_count = len(df["associate_id"].unique())
     group_cols = ["associate_id"]
@@ -128,6 +129,8 @@ def transform_person(df: pd.DataFrame) -> pd.DataFrame:
     If there are duplicates on first_name, middle_name, or last_name
         Order by first_name, middle_name, last_name and choose the first record
     """
+    df.drop("associate_id_care_organization", axis=1, inplace=True)
+    df = df.drop_duplicates(subset=["associate_id", "first_name", "middle_name", "last_name"])
     start_count = df.shape[0]
     df = df.sort_values(by=["associate_id", "first_name", "middle_name", "last_name"])
     df = df.drop_duplicates(subset=["associate_id"], keep="first")
@@ -140,18 +143,18 @@ def validate_legal_entity(df: pd.DataFrame) -> None:
 
 # ETL mappings, commented out w/e you don't want to load
 ETL_MAPPINGS = [
-    # KuzuObjectLoader(
-    #     target_table="PECOSEnrolledCareProvider",
-    #     source_table="vw_enrolled_care_provider_organizations",
-    #     transform_func=None,
-    #     validate_func=validate_care_provider_organizations,
-    # ),
-    # KuzuObjectLoader(
-    #     target_table="LegalEntity",
-    #     source_table="vw_extract_organization_owners",
-    #     transform_func=transform_legal_entity,
-    #     validate_func=validate_legal_entity
-    # ),
+    KuzuObjectLoader(
+        target_table="PECOSEnrolledCareProvider",
+        source_table="vw_enrolled_care_provider_organizations",
+        transform_func=None,
+        validate_func=validate_care_provider_organizations,
+    ),
+    KuzuObjectLoader(
+        target_table="LegalEntity",
+        source_table="vw_extract_organization_owners",
+        transform_func=transform_legal_entity,
+        validate_func=validate_legal_entity
+    ),
     KuzuObjectLoader(
         target_table="Person",
         source_table="vw_person",
