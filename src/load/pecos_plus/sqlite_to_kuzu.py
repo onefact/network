@@ -123,6 +123,17 @@ def transform_legal_entity(df: pd.DataFrame) -> pd.DataFrame:
     print(f"Transformed {count} records to {df.shape[0]} records")
     return df
 
+def transform_person(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    If there are duplicates on first_name, middle_name, or last_name
+        Order by first_name, middle_name, last_name and choose the first record
+    """
+    start_count = df.shape[0]
+    df = df.sort_values(by=["associate_id", "first_name", "middle_name", "last_name"])
+    df = df.drop_duplicates(subset=["associate_id"], keep="first")
+    assert ((start_count - df.shape[0]) / start_count) < 0.001, "More than 0.1% of records were affected"
+    return df
+
 def validate_legal_entity(df: pd.DataFrame) -> None:
     assert df.duplicated(subset=["associate_id"]).sum() == 0, "Duplicate associate_id found"
     return None
@@ -135,16 +146,16 @@ ETL_MAPPINGS = [
     #     transform_func=None,
     #     validate_func=validate_care_provider_organizations,
     # ),
-    KuzuObjectLoader(
-        target_table="LegalEntity",
-        source_table="vw_extract_organization_owners",
-        transform_func=transform_legal_entity,
-        validate_func=validate_legal_entity
-    ),
+    # KuzuObjectLoader(
+    #     target_table="LegalEntity",
+    #     source_table="vw_extract_organization_owners",
+    #     transform_func=transform_legal_entity,
+    #     validate_func=validate_legal_entity
+    # ),
     KuzuObjectLoader(
         target_table="Person",
         source_table="vw_person",
-        transform_func=None,
+        transform_func=transform_person,
         validate_func=validate_person
     )
 ]
