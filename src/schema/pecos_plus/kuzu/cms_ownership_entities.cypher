@@ -75,7 +75,7 @@ CREATE REL TABLE GROUP LocatedAt (
 
 CREATE REL TABLE GROUP OwnedBy (
     FROM PECOSEnrolledCareProvider TO LegalEntity,
-    FROM Person TO LegalEntity,
+    FROM PECOSEnrolledCareProvider TO Person,
     role_code STRING,
     role_text STRING,
     title STRING,
