@@ -17,7 +17,7 @@ from __future__ import annotations
 import os
 import shutil
 from pathlib import Path
-from typing import Callable, Optional
+from typing import Callable, Optional, Tuple
 import kuzu
 import sqlite3
 import pandas as pd
@@ -32,18 +32,25 @@ DEBUG_MODE = False
 class KuzuObjectLoader:
     def __init__(
         self,
-        target_table: str,
         source_table: str,
+        target_table: Optional[str],
+        relation_pair: Optional[Tuple[str, str]] = None,
         transform_func: Optional[Callable] = None,
         validate_func: Optional[Callable] = None,
     ):
         self.target_table = target_table
+        self.rel_pair = relation_pair
         self.source_table = source_table
         self.transform_func = transform_func
         self.validate_func = validate_func
+        assert (target_table or relation_pair) and not (self.target_table and relation_pair), "Must provide target_table or rel_pair"
+        self.is_relation = True if relation_pair else False
 
     def load(
-        self, target_conn: kuzu.Connection, source_conn: sqlite3.Connection
+        self, 
+        target_conn: kuzu.Connection, 
+        source_conn: sqlite3.Connection,
+        is_relation: bool = False
     ) -> None:
         print(f"Loading {self.source_table} to {self.target_table} into KùzuDB")
         df = pd.read_sql_query(f"SELECT * FROM {self.source_table}", source_conn)
@@ -56,15 +63,41 @@ class KuzuObjectLoader:
         if self.validate_func:
             self.validate_func(df)
 
-        # chunk the pandas dataframe and iterate over chunks
-        # loads with larger chunk size threw "segmentation fault"
-        CHUNK_SIZE = 2000
-        for i in range(0, len(df), CHUNK_SIZE):
-            chunk = df[i:i + CHUNK_SIZE]
-            print(f"Loading chunk ({i}, {i + CHUNK_SIZE})")
-            target_conn.execute(f"COPY {self.target_table} FROM (LOAD FROM chunk RETURN *)")
-        print(f"Loaded {len(df)} records to {self.target_table} into KùzuDB")
+        if not is_relation:
+            # chunk the pandas dataframe and iterate over chunks
+            # loads with larger chunk size threw "segmentation fault"
+            CHUNK_SIZE = 2000
+            for i in range(0, len(df), CHUNK_SIZE):
+                chunk = df[i:i + CHUNK_SIZE]
+                print(f"Loading chunk ({i}, {i + CHUNK_SIZE})")
+                target_conn.execute(f"COPY {self.target_table} FROM (LOAD FROM chunk RETURN *)")
+            print(f"Loaded {len(df)} records to {self.target_table} into KùzuDB")
+        elif is_relation:
+            # I is Kuzu Noob, grug brain. just string format it...
+            # https://grugbrain.dev
+            
+            
 
+            for i, row in df.iterrows(index=False):
+                if i % CHUNK_SIZE == 0:
+                    print(f"Loading chunk ({i}, {i + CHUNK_SIZE})")
+                from_id = row[0]
+                to_id = row[1]
+
+
+    def _gen_create_rel_statements(row: pd.Series) -> str:
+        """
+        Assume first two columns are primary keys, FROM and TO
+        Only works for strings 
+        """
+        from_id = row[0]
+        to_id = row[1]
+        statement = """
+        MATCH (e1:{self.rel_pair[0]}), (e2:{self.rel_pair[1]})
+
+        """
+        return
+    
 
 # Helper Functions
 def initialize_tables(conn: kuzu.Connection, ddl_script: str) -> None:
@@ -137,6 +170,11 @@ def transform_person(df: pd.DataFrame) -> pd.DataFrame:
     assert ((start_count - df.shape[0]) / start_count) < 0.001, "More than 0.1% of records were affected"
     return df
 
+def transform_person_ownership(df: pd.DataFrame) -> pd.DataFrame:
+    # filter to ownership roles
+    df = df.loc[df["role_code"].isin(["34","35","36", "37", "38", "39"])]
+    return df
+
 def validate_legal_entity(df: pd.DataFrame) -> None:
     assert df.duplicated(subset=["associate_id"]).sum() == 0, "Duplicate associate_id found"
     return None
@@ -149,27 +187,33 @@ ETL_MAPPINGS = [
         transform_func=None,
         validate_func=validate_care_provider_organizations,
     ),
-    KuzuObjectLoader(
-        target_table="LegalEntity",
-        source_table="vw_extract_organization_owners",
-        transform_func=transform_legal_entity,
-        validate_func=validate_legal_entity
-    ),
+    # KuzuObjectLoader(
+    #     target_table="LegalEntity",
+    #     source_table="vw_extract_organization_owners",
+    #     transform_func=transform_legal_entity,
+    #     validate_func=validate_legal_entity
+    # ),
     KuzuObjectLoader(
         target_table="Person",
         source_table="vw_person",
         transform_func=transform_person,
         validate_func=validate_person
+    ),
+    KuzuObjectLoader(
+        target_table="OwnedBy",
+        source_table="vw_person_affiliations",
+        transform_func=transform_person_ownership,
+        validate_func=None
     )
 ]
 
 # Main function
-def reload_from_scratch(
+def load_from_sqlite(
     data_path: str,
     kuzu_db_name: str,
     sqlite_db_name: str,
-    etl_mappings: list[KuzuObjectLoader],
-) -> None:
+    etl_mappings: list[KuzuObjectLoader]
+    ) -> None:
     """
     Delete existing Kuzu database and reload from scratch
     """
@@ -198,7 +242,7 @@ def reload_from_scratch(
         item.load(kuzu_conn, sqlite_conn)
 
 if __name__ == "__main__":
-    reload_from_scratch(DATA_PATH, KUZU_DB_NAME, SQLITE_DB_NAME, ETL_MAPPINGS)
+    load_from_sqlite(DATA_PATH, KUZU_DB_NAME, SQLITE_DB_NAME, ETL_MAPPINGS)
     kuzu_db = kuzu.Database(os.path.join(DATA_PATH, KUZU_DB_NAME))
     kuzu_conn = kuzu.Connection(kuzu_db)
     results = kuzu_conn.execute("MATCH (p:PECOSEnrolledCareProvider) RETURN p.enrollment_id, p.associate_id, p.organization_name;").get_as_df()
