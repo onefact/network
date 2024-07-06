@@ -79,25 +79,15 @@ class KuzuObjectLoader:
         elif self.is_relation:
             # I is Kuzu Noob, grugbrain. I no know best way.
             # https://grugbrain.dev
-            self.rel_triple
+            print(f"Loading {df.shape[0]} records to {self.rel_triple} into KùzuDB")
+            df.reset_index(drop=True, inplace=True)
             for i, row in df.iterrows():
+                print(i)
                 if i % CHUNK_SIZE == 0:
                     print(f"Loading chunk ({i}, {i + CHUNK_SIZE})")
                 statement = STATEMENT_DICT[self.rel_triple]
                 target_conn.execute(statement, parameters=row.to_dict())
-
-    def _gen_create_rel_statements(row: pd.Series) -> str:
-        """
-        Assume first two columns are primary keys, FROM and TO
-        Only works for strings
-        """
-        from_id = row[0]
-        to_id = row[1]
-        statement = """
-        MATCH (e1:{self.rel_pair[0]}), (e2:{self.rel_pair[1]})
-
-        """
-        return
+            print(f"Loaded {len(df)} records to {self.rel_triple} into KùzuDB")
 
 
 # Helper Functions
