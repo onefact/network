@@ -76,25 +76,12 @@ class KuzuObjectLoader:
                     f"COPY {self.target_table} FROM (LOAD FROM chunk RETURN *)"
                 )
             print(f"Loaded {len(df)} records to {self.target_table} into KùzuDB")
-        elif self.is_relation:
-            # I is Kuzu Noob, grugbrain. I no know best way.
-            # https://grugbrain.dev
-            print(f"Loading {df.shape[0]} records to {self.rel_triple} into KùzuDB")
-            df.reset_index(drop=True, inplace=True)
-            for i, row in df.iterrows():
-                print(i)
-                if i % CHUNK_SIZE == 0:
-                    print(f"Loading chunk ({i}, {i + CHUNK_SIZE})")
-                statement = STATEMENT_DICT[self.rel_triple]
-                target_conn.execute(statement, parameters=row.to_dict())
-            print(f"Loaded {len(df)} records to {self.rel_triple} into KùzuDB")
 
 
 # Helper Functions
 def initialize_tables(conn: kuzu.Connection, ddl_script: str) -> None:
     # print(ddl_script)
     conn.execute(ddl_script)
-
 
 # Transform / Validation Logic
 def validate_care_provider_organizations(df: pd.DataFrame) -> None:
@@ -213,8 +200,7 @@ ETL_MAPPINGS = [
     ),
     KuzuObjectLoader(
         source_table="vw_person_affiliations",
-        target_table=None,
-        relation_triple=("OwnedBy", "PECOSEnrolledCareProvider", "Person"),
+        target_table="OwnedBy_PECOSEnrolledCareProvider_Person",
         transform_func=transform_person_ownership,
         validate_func=None,
     ),
@@ -227,6 +213,7 @@ def load_from_sqlite(
     kuzu_db_name: str,
     sqlite_db_name: str,
     etl_mappings: list[KuzuObjectLoader],
+    init_tables: bool = True
 ) -> None:
     """
     Delete existing Kuzu database and reload from scratch
@@ -242,9 +229,10 @@ def load_from_sqlite(
     kuzu_conn = kuzu.Connection(kuzu_db)
 
     # Initialize tables
-    with open("src/schema/pecos_plus/kuzu/cms_ownership_entities.cypher", "r") as f:
-        ddl_script = f.read()
-        initialize_tables(kuzu_conn, ddl_script)
+    if init_tables:
+        with open("src/schema/pecos_plus/kuzu/cms_ownership_entities.cypher", "r") as f:
+            ddl_script = f.read()
+            initialize_tables(kuzu_conn, ddl_script)
 
     results = kuzu_conn.execute("CALL SHOW_TABLES() RETURN *;").get_as_df()
     print(results)
@@ -257,7 +245,7 @@ def load_from_sqlite(
 
 
 if __name__ == "__main__":
-    load_from_sqlite(DATA_PATH, KUZU_DB_NAME, SQLITE_DB_NAME, ETL_MAPPINGS)
+    load_from_sqlite(DATA_PATH, KUZU_DB_NAME, SQLITE_DB_NAME, ETL_MAPPINGS, init_tables=True)
     kuzu_db = kuzu.Database(os.path.join(DATA_PATH, KUZU_DB_NAME))
     kuzu_conn = kuzu.Connection(kuzu_db)
     results = kuzu_conn.execute(
