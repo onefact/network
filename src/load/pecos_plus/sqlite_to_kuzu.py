@@ -21,6 +21,7 @@ from typing import Callable, Optional, Tuple
 import kuzu
 import sqlite3
 import pandas as pd
+from kuzu_rel_load_statements import STATEMENT_DICT
 
 # Constants
 DATA_PATH = Path("data/staging")
@@ -34,25 +35,26 @@ class KuzuObjectLoader:
         self,
         source_table: str,
         target_table: Optional[str],
-        relation_pair: Optional[Tuple[str, str]] = None,
+        relation_triple: Optional[Tuple[str, str, str]] = None,
         transform_func: Optional[Callable] = None,
         validate_func: Optional[Callable] = None,
     ):
         self.target_table = target_table
-        self.rel_pair = relation_pair
+        self.rel_triple = relation_triple
         self.source_table = source_table
         self.transform_func = transform_func
         self.validate_func = validate_func
-        assert (target_table or relation_pair) and not (self.target_table and relation_pair), "Must provide target_table or rel_pair"
-        self.is_relation = True if relation_pair else False
+        assert (target_table or relation_triple) and not (
+            self.target_table and relation_triple
+        ), "Must provide target_table or rel_pair"
+        self.is_relation = True if relation_triple else False
 
     def load(
-        self, 
-        target_conn: kuzu.Connection, 
-        source_conn: sqlite3.Connection,
-        is_relation: bool = False
+        self,
+        target_conn: kuzu.Connection,
+        source_conn: sqlite3.Connection
     ) -> None:
-        print(f"Loading {self.source_table} to {self.target_table} into KùzuDB")
+        print(f"Loading {self.source_table} into KùzuDB")
         df = pd.read_sql_query(f"SELECT * FROM {self.source_table}", source_conn)
         if self.transform_func:
             df = self.transform_func(df)
@@ -63,32 +65,31 @@ class KuzuObjectLoader:
         if self.validate_func:
             self.validate_func(df)
 
-        if not is_relation:
+        CHUNK_SIZE = 2000
+        if not self.is_relation:
             # chunk the pandas dataframe and iterate over chunks
             # loads with larger chunk size threw "segmentation fault"
-            CHUNK_SIZE = 2000
             for i in range(0, len(df), CHUNK_SIZE):
-                chunk = df[i:i + CHUNK_SIZE]
+                chunk = df[i : i + CHUNK_SIZE]
                 print(f"Loading chunk ({i}, {i + CHUNK_SIZE})")
-                target_conn.execute(f"COPY {self.target_table} FROM (LOAD FROM chunk RETURN *)")
+                target_conn.execute(
+                    f"COPY {self.target_table} FROM (LOAD FROM chunk RETURN *)"
+                )
             print(f"Loaded {len(df)} records to {self.target_table} into KùzuDB")
-        elif is_relation:
-            # I is Kuzu Noob, grug brain. just string format it...
+        elif self.is_relation:
+            # I is Kuzu Noob, grugbrain. I no know best way.
             # https://grugbrain.dev
-            
-            
-
-            for i, row in df.iterrows(index=False):
+            self.rel_triple
+            for i, row in df.iterrows():
                 if i % CHUNK_SIZE == 0:
                     print(f"Loading chunk ({i}, {i + CHUNK_SIZE})")
-                from_id = row[0]
-                to_id = row[1]
-
+                statement = STATEMENT_DICT[self.rel_triple]
+                target_conn.execute(statement, parameters=row.to_dict())
 
     def _gen_create_rel_statements(row: pd.Series) -> str:
         """
         Assume first two columns are primary keys, FROM and TO
-        Only works for strings 
+        Only works for strings
         """
         from_id = row[0]
         to_id = row[1]
@@ -97,22 +98,29 @@ class KuzuObjectLoader:
 
         """
         return
-    
+
 
 # Helper Functions
 def initialize_tables(conn: kuzu.Connection, ddl_script: str) -> None:
-    #print(ddl_script)
+    # print(ddl_script)
     conn.execute(ddl_script)
+
 
 # Transform / Validation Logic
 def validate_care_provider_organizations(df: pd.DataFrame) -> None:
     # assert no dups on enrollment_id
-    assert df.duplicated(subset=["enrollment_id"]).sum() == 0, "Duplicate pecos_enrollment_id found"
+    assert (
+        df.duplicated(subset=["enrollment_id"]).sum() == 0
+    ), "Duplicate pecos_enrollment_id found"
     return None
 
+
 def validate_person(df: pd.DataFrame) -> None:
-    assert df.duplicated(subset=["associate_id"]).sum() == 0, "Duplicate associate_id found"
+    assert (
+        df.duplicated(subset=["associate_id"]).sum() == 0
+    ), "Duplicate associate_id found"
     return None
+
 
 def transform_legal_entity(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -122,7 +130,7 @@ def transform_legal_entity(df: pd.DataFrame) -> pd.DataFrame:
         - One record may indicate true for "created_for_acquisition" while another may show NULL, or false.
         - One record may indicate true for "created_for_acquisition" while another may show NULL, or false.
 
-    To keep it simple (naive?) 'Y' trumps 'N' and populated trumps NULL.  
+    To keep it simple (naive?) 'Y' trumps 'N' and populated trumps NULL.
     """
     df.drop("associate_id_care_organization", axis=1, inplace=True)
     count = df.shape[0]
@@ -141,21 +149,26 @@ def transform_legal_entity(df: pd.DataFrame) -> pd.DataFrame:
         "is_consulting_firm",
         "is_for_profit",
         "is_non_profit",
-        "other_type"
+        "other_type",
     ]
-    
-    df_booleans = df.groupby(group_cols)[fields].apply(lambda x: x.ffill().bfill().max()).reset_index()
-    fields = [
-        "organization_name",
-        "doing_business_as_name",
-        "other_type_text"
-    ]
-    df_names = df.groupby(group_cols)[fields].apply(lambda x: x.ffill().bfill().max()).reset_index()
+
+    df_booleans = (
+        df.groupby(group_cols)[fields]
+        .apply(lambda x: x.ffill().bfill().max())
+        .reset_index()
+    )
+    fields = ["organization_name", "doing_business_as_name", "other_type_text"]
+    df_names = (
+        df.groupby(group_cols)[fields]
+        .apply(lambda x: x.ffill().bfill().max())
+        .reset_index()
+    )
     df = pd.merge(df_booleans, df_names, on=group_cols)
     assert dedup_count == df.shape[0], "Deduplication failed"
-    df['legal_entity_id'] = None  # or populate it with appropriate values
+    df["legal_entity_id"] = None  # or populate it with appropriate values
     print(f"Transformed {count} records to {df.shape[0]} records")
     return df
+
 
 def transform_person(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -163,21 +176,30 @@ def transform_person(df: pd.DataFrame) -> pd.DataFrame:
         Order by first_name, middle_name, last_name and choose the first record
     """
     df.drop("associate_id_care_organization", axis=1, inplace=True)
-    df = df.drop_duplicates(subset=["associate_id", "first_name", "middle_name", "last_name"])
+    df = df.drop_duplicates(
+        subset=["associate_id", "first_name", "middle_name", "last_name"]
+    )
     start_count = df.shape[0]
     df = df.sort_values(by=["associate_id", "first_name", "middle_name", "last_name"])
     df = df.drop_duplicates(subset=["associate_id"], keep="first")
-    assert ((start_count - df.shape[0]) / start_count) < 0.001, "More than 0.1% of records were affected"
+    assert (
+        (start_count - df.shape[0]) / start_count
+    ) < 0.001, "More than 0.1% of records were affected"
     return df
+
 
 def transform_person_ownership(df: pd.DataFrame) -> pd.DataFrame:
     # filter to ownership roles
-    df = df.loc[df["role_code"].isin(["34","35","36", "37", "38", "39"])]
+    df = df.loc[df["role_code"].isin(["34", "35", "36", "37", "38", "39"])]
     return df
 
+
 def validate_legal_entity(df: pd.DataFrame) -> None:
-    assert df.duplicated(subset=["associate_id"]).sum() == 0, "Duplicate associate_id found"
+    assert (
+        df.duplicated(subset=["associate_id"]).sum() == 0
+    ), "Duplicate associate_id found"
     return None
+
 
 # ETL mappings, commented out w/e you don't want to load
 ETL_MAPPINGS = [
@@ -197,23 +219,25 @@ ETL_MAPPINGS = [
         target_table="Person",
         source_table="vw_person",
         transform_func=transform_person,
-        validate_func=validate_person
+        validate_func=validate_person,
     ),
     KuzuObjectLoader(
-        target_table="OwnedBy",
         source_table="vw_person_affiliations",
+        target_table=None,
+        relation_triple=("OwnedBy", "PECOSEnrolledCareProvider", "Person"),
         transform_func=transform_person_ownership,
-        validate_func=None
-    )
+        validate_func=None,
+    ),
 ]
+
 
 # Main function
 def load_from_sqlite(
     data_path: str,
     kuzu_db_name: str,
     sqlite_db_name: str,
-    etl_mappings: list[KuzuObjectLoader]
-    ) -> None:
+    etl_mappings: list[KuzuObjectLoader],
+) -> None:
     """
     Delete existing Kuzu database and reload from scratch
     """
@@ -241,9 +265,12 @@ def load_from_sqlite(
     for item in etl_mappings:
         item.load(kuzu_conn, sqlite_conn)
 
+
 if __name__ == "__main__":
     load_from_sqlite(DATA_PATH, KUZU_DB_NAME, SQLITE_DB_NAME, ETL_MAPPINGS)
     kuzu_db = kuzu.Database(os.path.join(DATA_PATH, KUZU_DB_NAME))
     kuzu_conn = kuzu.Connection(kuzu_db)
-    results = kuzu_conn.execute("MATCH (p:PECOSEnrolledCareProvider) RETURN p.enrollment_id, p.associate_id, p.organization_name;").get_as_df()
+    results = kuzu_conn.execute(
+        "MATCH (p:PECOSEnrolledCareProvider) RETURN p.enrollment_id, p.associate_id, p.organization_name;"
+    ).get_as_df()
     print(results.iloc[0:10])
