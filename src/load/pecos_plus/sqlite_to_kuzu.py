@@ -21,7 +21,6 @@ from typing import Callable, Optional, Tuple
 import kuzu
 import sqlite3
 import pandas as pd
-from kuzu_rel_load_statements import STATEMENT_DICT
 
 # Constants
 DATA_PATH = Path("data/staging")
