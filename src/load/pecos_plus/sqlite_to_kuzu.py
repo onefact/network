@@ -163,7 +163,7 @@ def transform_person(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def transform_person_ownership(df: pd.DataFrame) -> pd.DataFrame:
+def transform_ownership(df: pd.DataFrame) -> pd.DataFrame:
     # filter to ownership roles
     df = df.loc[df["role_code"].isin(["34", "35", "36", "37", "38", "39"])]
     return df
@@ -184,12 +184,12 @@ ETL_MAPPINGS = [
         transform_func=None,
         validate_func=validate_care_provider_organizations,
     ),
-    # KuzuObjectLoader(
-    #     target_table="LegalEntity",
-    #     source_table="vw_extract_organization_owners",
-    #     transform_func=transform_legal_entity,
-    #     validate_func=validate_legal_entity
-    # ),
+    KuzuObjectLoader(
+        target_table="LegalEntity",
+        source_table="vw_extract_organization_owners",
+        transform_func=transform_legal_entity,
+        validate_func=validate_legal_entity
+    ),
     KuzuObjectLoader(
         target_table="Person",
         source_table="vw_person",
@@ -199,9 +199,15 @@ ETL_MAPPINGS = [
     KuzuObjectLoader(
         source_table="vw_person_affiliations",
         target_table="OwnedBy_PECOSEnrolledCareProvider_Person",
-        transform_func=transform_person_ownership,
+        transform_func=transform_ownership,
         validate_func=None,
     ),
+        KuzuObjectLoader(
+        source_table="vw_extract_organization_owner_relationships",
+        target_table="OwnedBy_PECOSEnrolledCareProvider_LegalEntity",
+        transform_func=transform_ownership,
+        validate_func=None,
+    )
 ]
 
 

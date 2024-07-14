@@ -495,13 +495,14 @@ WHERE type_owner = 'O';
 
 DROP VIEW IF EXISTS vw_extract_organization_owner_relationships;
 CREATE VIEW vw_extract_organization_owner_relationships AS
+WITH union_all AS (
 SELECT
     associate_id AS associate_id_care_organization,
     associate_id_owner AS associate_id,
-    role_code,
-    role_text,
-    title,
-    association_date,
+    role_code_owner AS role_code,
+    role_text_owner AS role_text,
+    title_owner AS title,
+    association_date_owner AS association_date,
     percentage_ownership
 FROM hospital_all_owners
 WHERE type_owner = 'O'
@@ -509,10 +510,10 @@ UNION
 SELECT
     associate_id AS associate_id_care_organization,
     associate_id_owner AS associate_id,
-    role_code,
-    role_text,
-    title,
-    association_date,
+    role_code_owner AS role_code,
+    role_text_owner AS role_text,
+    title_owner AS title,
+    association_date_owner AS association_date,
     percentage_ownership
 FROM hha_all_owners
 WHERE type_owner = 'O'
@@ -520,10 +521,10 @@ UNION
 SELECT
     associate_id AS associate_id_care_organization,
     associate_id_owner AS associate_id,
-    role_code,
-    role_text,
-    title,
-    association_date,
+    role_code_owner AS role_code,
+    role_text_owner AS role_text,
+    title_owner AS title,
+    association_date_owner AS association_date,
     percentage_ownership
 FROM hospice_all_owners
 WHERE type_owner = 'O'
@@ -531,10 +532,10 @@ UNION
 SELECT
     associate_id AS associate_id_care_organization,
     associate_id_owner AS associate_id,
-    role_code,
-    role_text,
-    title,
-    association_date,
+    role_code_owner AS role_code,
+    role_text_owner AS role_text,
+    title_owner AS title,   
+    association_date_owner AS association_date,
     percentage_ownership
 FROM snf_all_owners
 WHERE type_owner = 'O'
@@ -542,10 +543,10 @@ UNION
 SELECT
     associate_id AS associate_id_care_organization,
     associate_id_owner AS associate_id,
-    role_code,
-    role_text,
-    title,
-    association_date,
+    role_code_owner AS role_code,
+    role_text_owner AS role_text,
+    title_owner AS title,
+    association_date_owner AS association_date,
     percentage_ownership
 FROM fqhc_all_owners
 WHERE type_owner = 'O'
@@ -553,11 +554,24 @@ UNION
 SELECT
     associate_id AS associate_id_care_organization,
     associate_id_owner AS associate_id,
-    role_code,
-    role_text,
-    title,
-    association_date,
+    role_code_owner AS role_code,
+    role_text_owner AS role_text,
+    title_owner AS title,
+    association_date_owner AS association_date,
     percentage_ownership
 FROM rhc_all_owners
-WHERE type_owner = 'O';
+WHERE type_owner = 'O'
+)
+SELECT 
+    DISTINCT 
+    e.enrollment_id,
+    u.associate_id,
+    u.role_code,
+    u.role_text,
+    u.title,
+    u.association_date,
+    u.percentage_ownership
+FROM union_all u
+INNER JOIN vw_enrolled_care_provider_organizations e
+ON u.associate_id_care_organization = e.associate_id;
 
