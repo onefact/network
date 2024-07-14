@@ -1,33 +1,45 @@
-# Vision
 
-This is a database of entities such as corporations (S-Corp, B-Corp, etc), limited liability companies, and their various stakeholders (other limited liability companies, venture capital-associated entities, private equity associated companies, etc).
+# About
+Does getting healthcare in the US confuse you? Perhaps…
+- You’re a patient, and you get a letter from some mysterious [“ACO” thingamajig](https://www.cms.gov/medicare/payment/fee-for-service-providers/shared-savings-program-ssp-acos/guidance-regulations#:~:text=An%20ACO%20or%20ACO%20participant,visit%20of%20the%20agreement%20period.), and now you’re not sure who they are and what they have to do with your doctor.
+- You’re a retiring practitioner and you were approached by [Bartholomew Banks](https://www.youtube.com/watch?v=nG6ppzJwPYU) with an offer. You’re enticed, but worried what selling your practice might mean for patients and peers.
+- Mom’s nursing home got acquired last week, and you’re wary of what it might mean.
 
-@onefact has developed a power mapping exercise applied to the United States' health care system (https://www.figma.com/community/file/1357026523815963441/power-map-of-united-states-health-care-stakeholders-patients-providers-and-payors). 
+As patients, we are trapped in a labyrinth of complex legal entities, including:
+- Genuine non-profits
+- Profit seeking non-profits
+- For profit organizations (VC, PE, insurers, “B-Corps” etc.)
+- Payors, providers, and payvidors...
 
-In order to assess and verify whether this power mapping exercise has high fidelity or low fidelity to the state of affairs of network analysis and entity linkage in the United States health care and real estate sectors (and their inter-related capital flows and bids for liquidity), we need to use the @openc database.
+While data on clinical professionals is published and heavily scrutinized (NPPES, data.gov), it’s harder to learn about the web of legal entities operating behind the scenes.
 
-## Methods
+At @onefact, we’re big believers that:
+1. Incentives drive outcomes
+2. Health policy is hard, and it’s not always clear which incentives are the best in any situation
+3. In any case, you need transparency to find out
 
-This repository relies on a mix of:
+## Tools
+This repository is meant to host **tools for understanding the labyrinth**. These will come in various forms, including:
+- Open source graph databases which merge public CMS data with additional sources (Open Corporates, Price Transparency data, Payer / Provider websites, etc.)
+- Websites and chat-based query interfaces that make the graph databases accessible to the general public.
+- Research and experimental methods for surfacing relationships between entities involved in healthcare delivery which are not documented via structured data (sometimes purposefully obfuscated).
 
-- large language models from @openai and @anthropics
-- databases such as @duckdb (we are giving a talk about this work at duckcon in august: https://duckdb.org/2024/08/15/duckcon5.html)
-- graph databases such as @kuzudb
+## Products
+### PECOS Plus
+Our first product is PECOS Plus, not to be confused with [PECOS 2.0](https://www.youtube.com/watch?v=P9ee_yWrsGU). PECOS Plus is an open source database which takes CMS PECOS enrollment and ownership data sources and maps them into a graph database. From there, we plan to...
+- Create an interactive visual interface whereby people can explore relationships and propose opaque, or undocumented affiliate relationships.
+- Integrate additional sources (Open Corporates, CMS Price Transparency data, etc.)
+- Publish subgraphs curated by industry veterans that map the 800 lb gorillas, i.e. the largest payvidor entities (United Healthcare Group, CVS Health, Humana Inc.)
+- Create a framework for experimenting with new methodologies to infer affiliate relationships. Similar to [CMS’ approach](https://data.cms.gov/resources/nursing-home-affiliated-entity-performance-measures-methodology) but with open source contributions.
+
+If you have healthcare industry experience, sleuthing skills, or programming chops and want to help make this happen, please reach out please email us at [help@payless.health](mailto:help@payless.health).
 
 ## Financing 
 
-This power mapping exercise is now supported by https://www.patientrightsadvocate.org/ through their grant of $100,000 to our organization, after our initial seed funding from @columbia and @SU-SWS.
+This mapping exercise is now supported by https://www.patientrightsadvocate.org/ through their grant of $100,000 to our organization, after our initial seed funding from @columbia and @SU-SWS.
 
 ## Conventions for collaboration
 
 Please tackle any open issue and submit a pull request - we are working out conventions for collaboration in this manner.
 
-Please submit an issue if you have a request for a feature, request for a visualization, or have any ideas on ways this data can be made more useful for health care, real estate use cases. 
-
-If e-mail support is needed, please email us at [help@payless.health](mailto:help@payless.health).
-
-# Data Sources
-
-### Ownership Data
-https://data.cms.gov/provider-characteristics/hospitals-and-other-facilities/hospital-all-owners/api-docs
-https://data.cms.gov/provider-characteristics/hospitals-and-other-facilities/home-health-agency-all-owners
+Feel free to submit an issue if you have a request for a feature, request for a visualization, or have any ideas on ways this data can be made more useful for health care use cases.
