@@ -65,16 +65,15 @@ class KuzuObjectLoader:
             self.validate_func(df)
 
         CHUNK_SIZE = 2000
-        if not self.is_relation:
-            # chunk the pandas dataframe and iterate over chunks
-            # loads with larger chunk size threw "segmentation fault"
-            for i in range(0, len(df), CHUNK_SIZE):
-                chunk = df[i : i + CHUNK_SIZE]
-                print(f"Loading chunk ({i}, {i + CHUNK_SIZE})")
-                target_conn.execute(
-                    f"COPY {self.target_table} FROM (LOAD FROM chunk RETURN *)"
-                )
-            print(f"Loaded {len(df)} records to {self.target_table} into KùzuDB")
+        # chunk the pandas dataframe and iterate over chunks
+        # loads with larger chunk size threw "segmentation fault"
+        for i in range(0, len(df), CHUNK_SIZE):
+            chunk = df[i : i + CHUNK_SIZE]
+            print(f"Loading chunk ({i}, {i + CHUNK_SIZE})")
+            target_conn.execute(
+                f"COPY {self.target_table} FROM (LOAD FROM chunk RETURN *)"
+            )
+        print(f"Loaded {len(df)} records to {self.target_table} into KùzuDB")
 
 
 # Helper Functions
