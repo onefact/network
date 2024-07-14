@@ -27,14 +27,14 @@ Our first product is PECOS Plus, not to be confused with [PECOS 2.0](https://www
 - Publish subgraphs curated by industry veterans that map the 800 lb gorillas, i.e. the largest payvidor entities (United Healthcare Group, CVS Health, Humana Inc.)
 - Create a framework for experimenting with new methodologies to infer affiliate relationships. Similar to [CMS’ approach](https://data.cms.gov/resources/nursing-home-affiliated-entity-performance-measures-methodology) but with open source contributions.
 
-If you have healthcare industry experience, sleuthing skills, or programming chops and want to help make this happen, please reach out please email us at [help@payless.health](mailto:help@payless.health).
-
-## Financing 
-
-This mapping exercise is now supported by https://www.patientrightsadvocate.org/ through their grant of $100,000 to our organization, after our initial seed funding from @columbia and @SU-SWS.
+If you have healthcare industry experience, sleuthing skills, or programming chops and want to help make this happen, please email us at [help@payless.health](mailto:help@payless.health).
 
 ## Conventions for collaboration
 
 Please tackle any open issue and submit a pull request - we are working out conventions for collaboration in this manner.
 
 Feel free to submit an issue if you have a request for a feature, request for a visualization, or have any ideas on ways this data can be made more useful for health care use cases.
+
+## Financing 
+
+This mapping exercise is now supported by https://www.patientrightsadvocate.org/ through their grant of $100,000 to our organization, after our initial seed funding from @columbia and @SU-SWS.
