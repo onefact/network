@@ -1,17 +1,12 @@
 
 # About
-Does getting healthcare in the US confuse you? Perhaps…
+Does getting healthcare in the US feel like a labyrinth? Perhaps…
 - You’re a patient, and you get a letter from some mysterious [“ACO” thingamajig](https://www.cms.gov/medicare/payment/fee-for-service-providers/shared-savings-program-ssp-acos/guidance-regulations#:~:text=An%20ACO%20or%20ACO%20participant,visit%20of%20the%20agreement%20period.), and now you’re not sure who they are and what they have to do with your doctor.
 - You’re a retiring practitioner and you were approached by [Bartholomew Banks](https://www.youtube.com/watch?v=nG6ppzJwPYU) with an offer. You’re enticed, but worried what selling your practice might mean for patients and peers.
 - Mom’s nursing home got acquired last week, and you’re wary of what it might mean.
+- The insurer negotiated price of your medication is way higher than if you buy it without them involved...
 
-As patients, we are trapped in a labyrinth of complex legal entities, including:
-- Genuine non-profits
-- Profit seeking non-profits
-- For profit organizations (VC, PE, insurers, “B-Corps” etc.)
-- Payors, providers, and payvidors...
-
-While data on clinical professionals is published and heavily scrutinized (NPPES, data.gov), it’s harder to learn about the web of legal entities operating behind the scenes.
+While data on clinical professionals are heavily scrutinized, it’s harder to learn about the web of legal entities and business strategies operating behind the scenes.
 
 At @onefact, we’re big believers that:
 1. Incentives drive outcomes
