@@ -1,12 +1,11 @@
 # IDE
 .vscode
 
-
 # repo
 data/raw/*
 !data/raw/.gitkeep
-data/interim/*
-!data/interim/.gitkeep
+data/staging/*
+!data/staging/.gitkeep
 data/processed/*
 
 # template
