@@ -21,6 +21,7 @@ This repository is meant to host **tools for understanding the labyrinth**. Thes
 
 ## Products
 ### PECOS Plus
+#### Overview
 Our first product is PECOS Plus, not to be confused with [PECOS 2.0](https://www.youtube.com/watch?v=P9ee_yWrsGU). PECOS Plus is an open source database which takes CMS PECOS enrollment and ownership data sources and maps them into a graph database. From there, we plan to...
 - Create an interactive visual interface whereby people can explore relationships and propose opaque, or undocumented affiliate relationships.
 - Integrate additional sources (Open Corporates, CMS Price Transparency data, etc.)
@@ -28,6 +29,19 @@ Our first product is PECOS Plus, not to be confused with [PECOS 2.0](https://www
 - Create a framework for experimenting with new methodologies to infer affiliate relationships. Similar to [CMS’ approach](https://data.cms.gov/resources/nursing-home-affiliated-entity-performance-measures-methodology) but with open source contributions.
 
 If you have healthcare industry experience, sleuthing skills, or programming chops and want to help make this happen, please email us at [help@payless.health](mailto:help@payless.health).
+
+#### Getting Started
+
+To set up the Pecos Plus database, follow these steps:
+
+1. **Create a Conda Environment:**
+   - Begin by setting up a Conda environment to manage dependencies. Use the appropriate environment configuration file if available, or create a new environment using `conda create`.
+
+2. **Load CMS Data into SQLite:**
+   - Execute the script `load_cms_data_api_to_sqlite.py` to download and load CMS data into a SQLite database. This script handles the data retrieval and populates the SQLite database with the necessary information.
+
+3. **Transfer Data from SQLite to Kuzu:**
+   - Finally, run the `load_sqlite_to_kuzu.py` script to transfer the data from the SQLite database to the Kuzu database. This step migrates the data into the Kuzu database format, completing the setup process.
 
 ## Conventions for collaboration
 
