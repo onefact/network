@@ -163,11 +163,16 @@ def transform_person(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def transform_ownership(df: pd.DataFrame) -> pd.DataFrame:
+def filter_to_owner_role(df: pd.DataFrame) -> pd.DataFrame:
     # filter to ownership roles
     df = df.loc[df["role_code"].isin(["34", "35", "36", "37", "38", "39"])]
     return df
 
+def filter_to_employee_role(df: pd.DataFrame) -> pd.DataFrame:
+    # filter to ownership roles
+    df = df.loc[df["role_code"].isin(["40", "41", "42", "43"])]
+    df.drop("percentage_ownership", axis=1, inplace=True)
+    return df
 
 def validate_legal_entity(df: pd.DataFrame) -> None:
     assert (
@@ -199,15 +204,22 @@ ETL_MAPPINGS = [
     KuzuObjectLoader(
         source_table="vw_person_affiliations",
         target_table="OwnedBy_PECOSEnrolledCareProvider_Person",
-        transform_func=transform_ownership,
+        transform_func=filter_to_owner_role,
         validate_func=None,
     ),
-        KuzuObjectLoader(
+    KuzuObjectLoader(
         source_table="vw_extract_organization_owner_relationships",
         target_table="OwnedBy_PECOSEnrolledCareProvider_LegalEntity",
-        transform_func=transform_ownership,
+        transform_func=filter_to_owner_role,
         validate_func=None,
-    )
+    ),
+    # TODO - RuntimeError: Runtime exception: Unable to find primary key value O20080208000104.
+    # KuzuObjectLoader(
+    #     source_table="vw_person_affiliations",
+    #     target_table="EmployedBy",
+    #     transform_func=filter_to_employee_role,
+    #     validate_func=None,
+    # ),
 ]
 
 
