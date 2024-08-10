@@ -111,6 +111,11 @@ class CMSDataAPILoader():
             print("Processing dataset: ", dataset.title)
             self.retrieve_dataset(dataset)
 
+        # initialize views
+        with open("src/schema/pecos_plus/sqlite/network_etl_views.sql") as f:
+            views = f.read()
+            self.conn.executescript(views)
+
 if __name__ == '__main__':
     loader = CMSDataAPILoader('data/staging/cms_data_api_raw.db')
     loader.load_all_datasets()
