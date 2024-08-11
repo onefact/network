@@ -142,6 +142,30 @@ def transform_legal_entity(df: pd.DataFrame) -> pd.DataFrame:
     assert dedup_count == df.shape[0], "Deduplication failed"
     df["legal_entity_id"] = None  # or populate it with appropriate values
     print(f"Transformed {count} records to {df.shape[0]} records")
+
+    # rearrange columns to match destination table
+    df = df[
+        [
+            "associate_id",
+            "legal_entity_id",
+            "organization_name",
+            "doing_business_as_name",
+            "created_for_acquisition",
+            "is_corporation",
+            "is_llc",
+            "is_medical_provider_supplier",
+            "is_management_services_company",
+            "is_medical_staffing_company",
+            "is_holding_company",
+            "is_investment_firm",
+            "is_financial_institution",
+            "is_consulting_firm",
+            "is_for_profit",
+            "is_non_profit",
+            "other_type",
+            "other_type_text",
+        ]
+    ]
     return df
 
 
