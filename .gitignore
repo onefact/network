@@ -169,3 +169,13 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+
+# Ignore Kuzu database files
+src/load/pecos_plus/data/staging/pecos_plus.db/.lock
+src/load/pecos_plus/data/staging/pecos_plus.db/.shadow
+src/load/pecos_plus/data/staging/pecos_plus.db/.wal
+src/load/pecos_plus/data/staging/pecos_plus.db/catalog.kz
+src/load/pecos_plus/data/staging/pecos_plus.db/data.kz
+src/load/pecos_plus/data/staging/pecos_plus.db/metadata.kz
+src/load/pecos_plus/data/staging/pecos_plus.db/n-*.hindex
+src/load/pecos_plus/data/staging/pecos_plus.db/n-*.hindex.ovf
