@@ -179,3 +179,4 @@ src/load/pecos_plus/data/staging/pecos_plus.db/data.kz
 src/load/pecos_plus/data/staging/pecos_plus.db/metadata.kz
 src/load/pecos_plus/data/staging/pecos_plus.db/n-*.hindex
 src/load/pecos_plus/data/staging/pecos_plus.db/n-*.hindex.ovf
+data/embeddingdata/*
